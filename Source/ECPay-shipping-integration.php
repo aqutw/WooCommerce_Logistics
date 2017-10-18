@@ -1,12 +1,12 @@
 <?php
 /**
  * @copyright Copyright (c) 2016 Green World FinTech Service Co., Ltd. (https://www.ecpay.com.tw)
- * @version 1.1.0801
+ * @version 1.1.1017
  *
- * Plugin Name: ECPay Shipping
+ * Plugin Name: WooCommerce ECPay Shipping
  * Plugin URI: https://www.ecpay.com.tw
  * Description: ECPay Integration Shipping Gateway for WooCommerce
- * Version: 1.1.0801
+ * Version: 1.1.1017
  * Author: ECPay Green World FinTech Service Co., Ltd. 
  * Author URI: https://www.ecpay.com.tw
  */
@@ -674,7 +674,7 @@ if (!class_exists('EcPay_Shipping_Options')) {
                             session_start();
 
                             $shipping_name = $this->ECPay_Logistics[$this->category];
-                            $replyUrl = esc_url(get_permalink());
+                            $replyUrl = esc_url(wc_get_page_permalink('checkout'));
                             if ($this->category == "B2C") {
                                 $shippingMethod = [
                                     'FAMI' => LogisticsSubType::FAMILY,
