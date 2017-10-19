@@ -9,8 +9,8 @@
 
 
 ## 2. 適用版本
-  - Wordpress Version 4.5.2 / 4.4.3 / 4.3.4 / 4.8.0
-  - WooCommerce Version 2.5.5 / 2.4.13 / 3.0.9 / 3.1.1
+  - Wordpress Version 4.5.3 / 4.6.1 / 4.7.3 / 4.8.0 / 4.8.1
+  - WooCommerce Version 2.6.0~2.6.14 / 3.1.0~3.1.2
  
 
 ## 3. 安裝導引教學
@@ -18,6 +18,6 @@
 
 
 ## 4. 聯絡我們
-  - 綠界技術客服信箱: techsupport@greenworld.com.tw
+  - 綠界技術客服信箱: techsupport@ecpay.com.tw
 
 
