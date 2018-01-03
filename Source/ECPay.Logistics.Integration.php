@@ -1641,7 +1641,9 @@
 				$this->IsOverLength($Name, $this->StringLength($Value, $this->Encode), $MaxLength);
 				
 				// 格式檢查
-				$this->IsValidFormat($Name, '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]{2,4}$/', $Value);
+                if (!filter_var($Value, FILTER_VALIDATE_EMAIL)) {
+                    throw new Exception('Invalid ' . $Name . '.');
+                }
 			}
 		}
 		

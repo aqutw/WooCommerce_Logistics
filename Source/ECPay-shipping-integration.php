@@ -769,7 +769,7 @@
                                     var payment = document.getElementsByName('payment_method');
                                     var shippingMethod = {};
                                     var checkoutData = {};
-                                    let checkoutField = [
+                                    var checkoutField = [
                                         'billing_first_name',
                                         'billing_last_name',
                                         'billing_company',
@@ -918,7 +918,7 @@
                                     document.getElementById('purchaserAddress').style.display = 'none';
                                     document.getElementById('purchaserPhone').style.display = 'none';
 
-                                    let checkoutData = {
+                                    var checkoutData = {
                                         'billing_first_name': '<?php echo $billing_first_name; ?>',
                                         'billing_last_name': '<?php echo $billing_last_name; ?>',
                                         'billing_company': '<?php echo $billing_company; ?>',
