@@ -1,12 +1,12 @@
 <?php
 /**
- * @copyright Copyright (c) 2016 Green World FinTech Service Co., Ltd. (https://www.ecpay.com.tw)
- * @version 1.1.1207
+ * @copyright Copyright (c) 2018 Green World FinTech Service Co., Ltd. (https://www.ecpay.com.tw)
+ * @version 1.1.0130
  *
  * Plugin Name: WooCommerce ECPay Shipping
  * Plugin URI: https://www.ecpay.com.tw
  * Description: ECPay Integration Shipping Gateway for WooCommerce
- * Version: 1.1.1207
+ * Version: 1.1.0130
  * Author: ECPay Green World FinTech Service Co., Ltd. 
  * Author URI: https://www.ecpay.com.tw
  */
@@ -1407,6 +1407,23 @@
         }
 
         return $value;
+    }
+
+    add_action('woocommerce_after_checkout_validation', 'validate_payment_after_checkout');
+
+    function validate_payment_after_checkout() {
+        $shippingMethod = $_POST['shipping_method'][0];
+        $paymentMethod = $_POST['payment_method'];
+
+        if ($paymentMethod === 'ecpay_shipping_pay') {
+            if ($shippingMethod !== 'ecpay_shipping') {
+                wc_add_notice("請選擇付款方式", 'error');
+            }
+        } else {
+            if ($shippingMethod === 'ecpay_shipping') {
+                wc_add_notice("請選擇付款方式", 'error');
+            }
+        }
     }
 
     // 前台訂單明細頁面 顯示超商取貨門市資訊
