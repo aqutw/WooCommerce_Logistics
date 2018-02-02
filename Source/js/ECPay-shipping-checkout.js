@@ -81,7 +81,7 @@ jQuery(document).ready(function($) {
             var shippingMethod = {};
             ecpay_checkout_form.set_ecpay_shipping();
             var param = ecpay_checkout_form.$param;
-            if (category == 'C2C') {
+            if (param.category == 'C2C') {
                 shippingMethod = {
                     'FAMI': 'FAMIC2C',
                     'FAMI_Collection': 'FAMIC2C',
@@ -101,7 +101,7 @@ jQuery(document).ready(function($) {
                 };
             }
             if (param.shipping in shippingMethod) {
-                document.getElementById('LogisticsSubType').value = shippingMethod[param.shipping];
+                $( '#LogisticsSubType' ).val(shippingMethod[param.shipping]);
                 var data = {
                     ecpayShippingType: param.shipping
                 };
@@ -115,8 +115,7 @@ jQuery(document).ready(function($) {
                 alert('請選擇物流方式');
                 return false;
             }
-            
-            $( 'form#ECPayForm' ).submit();
+            document.getElementById('ECPayForm').submit();
         },
         get_input_value: function() {
             var billing_first_name  = $( '#billing_first_name' ).val(),
