@@ -2,28 +2,103 @@
 
     session_start();
 
-    $ecpayShippingType = [
-        'FAMI',
-        'FAMI_Collection',
-        'UNIMART' ,
-        'UNIMART_Collection',
-        'HILIFE',
-        'HILIFE_Collection',
-    ];
+    if ( ! is_array($_POST)) {
+        return;
+    }
 
-    $checkout = [];
-    $checkout['billing_first_name'] = filter_var($_POST['checkoutData']['billing_first_name'], FILTER_SANITIZE_STRING);
-    $checkout['billing_last_name'] = filter_var($_POST['checkoutData']['billing_last_name'], FILTER_SANITIZE_STRING);
-    $checkout['billing_company'] = filter_var($_POST['checkoutData']['billing_company'], FILTER_SANITIZE_STRING);
-    $checkout['billing_phone'] = preg_match('/^09\d{8}$/', $_POST['checkoutData']['billing_phone']) ? $_POST['checkoutData']['billing_phone'] : '';
-    $checkout['billing_email'] = filter_var($_POST['checkoutData']['billing_email'], FILTER_VALIDATE_EMAIL) ? $_POST['checkoutData']['billing_email'] : '';
-    $checkout['shipping_first_name'] = filter_var($_POST['checkoutData']['shipping_first_name'], FILTER_SANITIZE_STRING);
-    $checkout['shipping_last_name'] = filter_var($_POST['checkoutData']['shipping_last_name'], FILTER_SANITIZE_STRING);
-    $checkout['shipping_company'] = filter_var($_POST['checkoutData']['shipping_company'], FILTER_SANITIZE_STRING);
+    $serviceList = array('ecpayShippingType', 'checkoutInput');
+    $checkoutInput = array();
+    foreach ($_POST as $key => $value) {
+        if (in_array($key, $serviceList)) {
+            $checkoutInput[$key] = $value;
+        }
+    }
 
-    if (!empty($_POST['ecpayShippingType']) && in_array($_POST['ecpayShippingType'], $ecpayShippingType)) {
-        $_SESSION['ecpayShippingType'] = htmlspecialchars($_POST['ecpayShippingType'], ENT_QUOTES, 'UTF-8');
-        foreach ($checkout as $key => $value) {
-            $_SESSION[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    $LogisticsField = 'ECPay_' . key($checkoutInput);
+    $LogisticsObj = new $LogisticsField;
+    $LogisticsObj->setInput($checkoutInput);
+    $LogisticsObj->validate();
+    $LogisticsObj->store();
+
+    class ECPayShippingCheckout
+    {
+        public $ecpayInput = array();
+        public $ecpayCheckout = array();
+
+        function setInput($post)
+        {
+            $this->ecpayInput = $post;
+        }
+
+        function store()
+        {
+            foreach ($this->ecpayCheckout as $key => $value) {
+                $_SESSION[$key] = $value;
+            }
+        }
+
+    }
+
+    class ECPay_ecpayShippingType extends ECPayShippingCheckout
+    {
+        function validate()
+        {
+            $checkoutInput = $this->ecpayInput['ecpayShippingType'];
+            $checkout = array();
+            $ecpayShippingType = array(
+                'FAMI',
+                'FAMI_Collection',
+                'UNIMART' ,
+                'UNIMART_Collection',
+                'HILIFE',
+                'HILIFE_Collection'
+            );
+            if (in_array($checkoutInput, $ecpayShippingType)) {
+                $checkout['ecpayShippingType'] = $checkoutInput;
+            }
+
+            foreach ($checkout as $key => $value) {
+                $checkout[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            }
+
+            $this->ecpayCheckout = $checkout;
+        }
+    }
+
+    class ECPay_checkoutInput extends ECPayShippingCheckout
+    {
+        function validate()
+        {
+            $checkoutInput = $this->ecpayInput['checkoutInput'];
+            $checkout = array();
+            $validateInput = [
+                'billing_first_name',
+                'billing_last_name',
+                'billing_company',
+                'shipping_first_name',
+                'shipping_last_name',
+                'shipping_company',
+                'order_comments'
+            ];
+            $validateEmail = ['billing_email'];
+            $validatePhone = ['billing_phone'];
+
+            foreach ($checkoutInput as $key => $value) {
+                if (in_array($key, $validateInput)) {
+                    $checkout[$key] = filter_var($checkoutInput[$key], FILTER_SANITIZE_STRING);
+                }
+                if (in_array($key, $validateEmail)) {
+                    $checkout[$key] = filter_var($checkoutInput[$key], FILTER_VALIDATE_EMAIL) ? $checkoutInput[$key] : '';
+                }
+                if (in_array($key, $validatePhone)) {
+                    $checkout[$key] = preg_match('/^09\d{8}$/', $checkoutInput[$key]) ? $checkoutInput[$key] : '';
+                }
+            }
+
+            foreach ($checkout as $key => $value) {
+                $checkout[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            }
+
+            $this->ecpayCheckout = $checkout;
         }
     }
