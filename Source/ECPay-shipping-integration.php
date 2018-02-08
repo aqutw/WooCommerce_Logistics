@@ -1,12 +1,12 @@
 <?php
 /**
  * @copyright Copyright (c) 2018 Green World FinTech Service Co., Ltd. (https://www.ecpay.com.tw)
- * @version 1.1.0130
+ * @version 1.2.0205
  *
  * Plugin Name: WooCommerce ECPay Shipping
  * Plugin URI: https://www.ecpay.com.tw
  * Description: ECPay Integration Shipping Gateway for WooCommerce
- * Version: 1.1.0130
+ * Version: 1.2.0205
  * Author: ECPay Green World FinTech Service Co., Ltd. 
  * Author URI: https://www.ecpay.com.tw
  */
@@ -111,6 +111,8 @@
                 $this->title = "綠界科技超商取貨";
                 $this->options_array_label = '綠界科技超商取貨';
                 $this->method_description = '';
+
+                add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
                 add_action('woocommerce_update_options_shipping_' . $this->id, array(&$this, 'process_admin_options'));
                 add_action('woocommerce_update_options_shipping_' . $this->id, array(&$this, 'process_shipping_options'));
 
@@ -763,7 +765,7 @@
                         </script>
                         <?php
                         // register ecpay-shipping-checkout to be enqueued.
-                        wp_register_script( 'ecpay-shipping-checkout', plugins_url( 'js/ECPay-shipping-checkout.js', __FILE__ ), null, true );
+                        wp_register_script( 'ecpay-shipping-checkout', plugins_url( 'js/ECPay-shipping-checkout.js?1.2.0205', __FILE__ ), null, true );
 
                         // enqueues ecpay-shipping-checkout.
                         if ( ! wp_script_is( 'ecpay-shipping-checkout', 'enqueued' ) ) {
@@ -806,6 +808,11 @@
                 if (get_post_meta($order->get_id()) && isset($ecpayShippingMethod)) {
                     echo '<p class="form-field"><strong>' . $this->title . ':</strong> ' . $ecpayShippingMethod . '(' . $ecpayShipping . ')' . '</p>';
                 }
+            }
+
+            function thankyou_page()
+            {
+                return;
             }
 
             function add_wcso_shipping_methods( $methods )
@@ -894,7 +901,8 @@
 
         class WC_Gateway_Ecpay_Logis extends WC_Payment_Gateway
         {
-            public function __construct() {
+            public function __construct()
+            {
                 # Load the translation
                 $this->id = 'ecpay_shipping_pay';
                 $this->icon = '';
@@ -911,8 +919,8 @@
                 # Register a action to save administrator settings
                 add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
                 
-                # Register a action to redirect to ecPay payment center
-                add_action( 'woocommerce_thankyou_cheque', array( $this, 'thankyou_page' ) );
+                # Register a action to redirect to ECPay payment center
+                add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
                 
                 # Register a action to process the callback
                 add_action('woocommerce_api_wc_gateway_ecpay_logis', array($this, 'receive_response'));
@@ -1051,7 +1059,7 @@
                 $order = wc_get_order( $MerchantTradeNo );
                 $order_status = $order->get_status();
 
-                $order->add_order_note("會員已更換門市", 0 ,false );
+                $order->add_order_note("會員已更換門市", 0, false );
                 
                 //訂單更新門市訊息
                 update_post_meta($MerchantTradeNo, '_CVSStoreID', $response['CVSStoreID']);
@@ -1073,6 +1081,11 @@
                 <?php
                 exit;
             }
+
+            function thankyou_page()
+            {
+                return;
+            }
         }
 
         /**
@@ -1087,7 +1100,8 @@
         add_filter('woocommerce_payment_gateways', 'woocommerce_add_ecpay_plugin2');
     }
 
-    function wc_ecpayshipping_render_wc_inactive_notice() {
+    function wc_ecpayshipping_render_wc_inactive_notice()
+    {
 
         $message = sprintf(
             /* translators: %1$s and %2$s are <strong> tags. %3$s and %4$s are <a> tags */
@@ -1129,17 +1143,12 @@
         
         if ($is_ecpayShipping == 'N') return;
         
-        switch (get_post_meta( $order->get_id(), 'ecPay_shipping' ,true)) {
-            case 'FAMI_Collection':
-                $LogisticsSubType = 'FAMI';
-                break;
-            case 'HILIFE_Collection':
-                $LogisticsSubType = 'HILIFE';
-                break;
-            case 'UNIMART_Collection':
-                $LogisticsSubType = 'UNIMART';
-                break;
-        }
+        $ECPayShipping = array(
+            'FAMI_Collection' => 'FAMI',
+            'HILIFE_Collection' => 'HILIFE',
+            'UNIMART_Collection' => 'UNIMART'
+        );
+        $LogisticsSubType = $ECPayShipping[get_post_meta( $order->get_id(), 'ecPay_shipping' ,true)];
 
         echo __( '門市代號', 'CVSStoreID' ) . ': ';
         echo  (array_key_exists('_shipping_CVSStoreID', get_post_meta($order->get_id()))) ? get_post_meta( $order->get_id(), '_shipping_CVSStoreID', true ) . '<br>' : get_post_meta( $order->get_id(), '_CVSStoreID', true ) . '<br>';
@@ -1233,7 +1242,8 @@
 
     add_action('woocommerce_after_checkout_validation', 'validate_payment_after_checkout');
 
-    function validate_payment_after_checkout() {
+    function validate_payment_after_checkout()
+    {
         $shippingMethod = $_POST['shipping_method'][0];
         $paymentMethod = $_POST['payment_method'];
 
@@ -1242,6 +1252,29 @@
                 wc_add_notice("請選擇付款方式", 'error');
             }
         }
+    }
+
+    add_action( 'woocommerce_pay_order_after_submit', 'action_woocommerce_review_order_before_payment', 10, 0 );
+
+    function action_woocommerce_review_order_before_payment()
+    {
+        ?>
+        <script>
+            var product_total = document.getElementsByClassName('wc_payment_method');
+            var disabled_payment_method_ecpay = [
+                'wc_payment_method payment_method_ecpay_shipping_pay',
+                'wc_payment_method payment_method_allpay',
+                'wc_payment_method payment_method_allpay_dca',
+                'wc_payment_method payment_method_ecpay',
+                'wc_payment_method payment_method_ecpay_dca'
+            ];
+            for (var i = 0; i < product_total.length; i++) {
+                if (disabled_payment_method_ecpay.indexOf(product_total[i].className) !== -1) {
+                    document.getElementsByClassName(product_total[i].className)[0].style.display = 'none';
+                }
+            }
+        </script>
+        <?php
     }
 
     // 前台訂單明細頁面 顯示超商取貨門市資訊

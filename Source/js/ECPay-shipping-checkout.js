@@ -167,82 +167,113 @@ jQuery(document).ready(function($) {
             $( '#purchaserPhoneLabel' ).html('');
         },
         ecpay_shipping_change_payment: function() {
-            if (
-                document.getElementById("payment_method_ecpay") !== null &&
-                typeof document.getElementById("payment_method_ecpay") !== "undefined" &&
-                document.getElementById("payment_method_ecpay_shipping_pay") !== null &&
-                typeof document.getElementById("payment_method_ecpay_shipping_pay") !== "undefined"
+            if (document.getElementById("payment_method_ecpay_shipping_pay") === null ||
+                typeof document.getElementById("payment_method_ecpay_shipping_pay") === "undefined"
             ) {
-                var shipping = ecpay_checkout_form.$param.shipping;
-                var payment = ecpay_checkout_form.$param.payment;
-                if (
-                    shipping == "HILIFE_Collection" ||
-                    shipping == "FAMI_Collection" ||
-                    shipping == "UNIMART_Collection"
-                ) {
-                    var i;
+                return;
+            }
 
-                    for (i = 0; i< payment.length; i++) {
-                        if (payment[i].id != 'payment_method_ecpay_shipping_pay') {
-                            payment[i].style.display="none";
+            // default payment method, get the last item in payment method.
+            var payment_method = ecpay_checkout_form.ecpay_default_payment_method();
 
-                            checkclass = document.getElementsByClassName("wc_payment_method "+payment[i].id).length;
+            // if payment method O'Pay is enable
+            if (document.getElementById("payment_method_allpay") !== null &&
+                typeof document.getElementById("payment_method_allpay") !== "undefined"
+            ) {
+                payment_method = 'payment_method_allpay';
+            }
 
-                            if (checkclass == 0) {
-                                var x = document.getElementsByClassName(payment[i].id);
-                                x[0].style.display = "none";
-                            } else {
-                                var x = document.getElementsByClassName("wc_payment_method "+payment[i].id);
-                                x[0].style.display = "none";
-                            }
-                        } else {
-                            checkclass = document.getElementsByClassName("wc_payment_method "+payment[i].id).length;
+            // if payment method ECPay is enable
+            if (document.getElementById("payment_method_ecpay") !== null &&
+                typeof document.getElementById("payment_method_ecpay") !== "undefined"
+            ) {
+                payment_method = 'payment_method_ecpay';
+            }
 
-                            if (checkclass == 0) {
-                                var x = document.getElementsByClassName(payment[i].id);
-                                x[0].style.display = "";
-                            } else {
-                                var x = document.getElementsByClassName("wc_payment_method "+payment[i].id);
-                                x[0].style.display = "";
-                            }
-                        }
+            var shipping = ecpay_checkout_form.$param.shipping;
+            var payment = ecpay_checkout_form.$param.payment;
+            var ecpay_shipping_collection = [
+                'HILIFE_Collection',
+                'FAMI_Collection',
+                'UNIMART_Collection',
+            ];
+            if (ecpay_shipping_collection.indexOf(shipping) !== -1) {
+                ecpay_checkout_form.ecpay_shipping_isCollection(payment_method, payment);
+            } else {
+                ecpay_checkout_form.ecpay_shipping_isNOTCollection(payment_method, payment);
+            }
+        },
+        ecpay_shipping_isCollection: function(payment_method, payment) {
+            for (var i = 0; i < payment.length; i++) {
+                if (payment[i].id !== 'payment_method_ecpay_shipping_pay') {
+                    payment[i].style.display = 'none';
+
+                    checkclass = document.getElementsByClassName('wc_payment_method ' + payment[i].id).length;
+
+                    if (checkclass === 0) {
+                        var x = document.getElementsByClassName(payment[i].id);
+                        x[0].style.display = 'none';
+                    } else {
+                        var x = document.getElementsByClassName('wc_payment_method ' + payment[i].id);
+                        x[0].style.display = 'none';
                     }
-                    document.getElementById('payment_method_ecpay').checked = false;
-                    document.getElementById('payment_method_ecpay_shipping_pay').checked = true;
-                    document.getElementById('payment_method_ecpay_shipping_pay').style.display = '';
                 } else {
-                    var i;
-                    for (i = 0; i< payment.length; i++) {
-                        if (payment[i].id != 'payment_method_ecpay_shipping_pay') {
-                            payment[i].style.display="";
+                    checkclass = document.getElementsByClassName('wc_payment_method ' + payment[i].id).length;
 
-                            checkclass = document.getElementsByClassName("wc_payment_method "+payment[i].id).length;
-
-                            if (checkclass == 0) {
-                                var x = document.getElementsByClassName(payment[i].id);
-                                x[0].style.display = "";
-                            } else {
-                                var x = document.getElementsByClassName("wc_payment_method "+payment[i].id);
-                                x[0].style.display = "";
-                            }
-                        } else {
-                            checkclass = document.getElementsByClassName("wc_payment_method "+payment[i].id).length;
-
-                            if (checkclass == 0) {
-                                var x = document.getElementsByClassName(payment[i].id);
-                                x[0].style.display = "none";
-                            } else {
-                                var x = document.getElementsByClassName("wc_payment_method "+payment[i].id);
-                                x[0].style.display = "none";
-                            }
-
-                            document.getElementById('payment_method_ecpay').checked = true;
-                            document.getElementById('payment_method_ecpay_shipping_pay').checked = false;
-                            document.getElementById('payment_method_ecpay_shipping_pay').style.display = "none";
-                        }
+                    if (checkclass === 0) {
+                        var x = document.getElementsByClassName(payment[i].id);
+                        x[0].style.display = '';
+                    } else {
+                        var x = document.getElementsByClassName('wc_payment_method ' + payment[i].id);
+                        x[0].style.display = '';
                     }
                 }
             }
+            document.getElementById(payment_method).checked = false;
+            document.getElementById('payment_method_ecpay_shipping_pay').checked = true;
+            document.getElementById('payment_method_ecpay_shipping_pay').style.display = '';
+        },
+        ecpay_shipping_isNOTCollection: function(payment_method, payment) {
+            for (var i = 0; i < payment.length; i++) {
+                if (payment[i].id !== 'payment_method_ecpay_shipping_pay') {
+                    payment[i].style.display = '';
+
+                    checkclass = document.getElementsByClassName('wc_payment_method ' + payment[i].id).length;
+
+                    if (checkclass === 0) {
+                        var x = document.getElementsByClassName(payment[i].id);
+                        x[0].style.display = '';
+                    } else {
+                        var x = document.getElementsByClassName('wc_payment_method ' + payment[i].id);
+                        x[0].style.display = '';
+                    }
+                } else {
+                    checkclass = document.getElementsByClassName('wc_payment_method ' + payment[i].id).length;
+
+                    if (checkclass === 0) {
+                        var x = document.getElementsByClassName(payment[i].id);
+                        x[0].style.display = 'none';
+                    } else {
+                        var x = document.getElementsByClassName('wc_payment_method ' + payment[i].id);
+                        x[0].style.display = 'none';
+                    }
+
+                    document.getElementById(payment_method).checked = true;
+                    document.getElementById('payment_method_ecpay_shipping_pay').checked = false;
+                    document.getElementById('payment_method_ecpay_shipping_pay').style.display = 'none';
+                }
+            }
+        },
+        ecpay_default_payment_method: function() {
+            var payment = ecpay_checkout_form.$param.payment;
+            var payments = [];
+            for (var i = 0; i < payment.length; i++) {
+                if (payment[i].id !== 'payment_method_ecpay_shipping_pay') {
+                    payments.push(payment[i].id);
+                }
+            }
+
+            return payments.pop();
         }
     };
 
