@@ -1,12 +1,12 @@
 <?php
 /**
  * @copyright Copyright (c) 2018 Green World FinTech Service Co., Ltd. (https://www.ecpay.com.tw)
- * @version 1.2.0205
+ * @version 1.2.0223
  *
  * Plugin Name: WooCommerce ECPay Shipping
  * Plugin URI: https://www.ecpay.com.tw
  * Description: ECPay Integration Shipping Gateway for WooCommerce
- * Version: 1.2.0205
+ * Version: 1.2.0223
  * Author: ECPay Green World FinTech Service Co., Ltd. 
  * Author URI: https://www.ecpay.com.tw
  */
@@ -765,7 +765,7 @@
                         </script>
                         <?php
                         // register ecpay-shipping-checkout to be enqueued.
-                        wp_register_script( 'ecpay-shipping-checkout', plugins_url( 'js/ECPay-shipping-checkout.js?1.2.0205', __FILE__ ), null, true );
+                        wp_register_script( 'ecpay-shipping-checkout', plugins_url( 'js/ECPay-shipping-checkout.js?1.2.0223', __FILE__ ), null, true );
 
                         // enqueues ecpay-shipping-checkout.
                         if ( ! wp_script_is( 'ecpay-shipping-checkout', 'enqueued' ) ) {
@@ -1188,12 +1188,35 @@
 
     function checkout_payment_method($value)
     {
+        $value = check_checkout_payment_method($value);
+
+        $CVSField = array(
+            'purchaserStore' => '<label id="purchaserStoreLabel">',
+            'purchaserAddress' => '<label id="purchaserAddressLabel">',
+            'purchaserPhone' => '<label id="purchaserPhoneLabel">'
+        );
+        parse_str($_POST['post_data'], $postData);
+
+        if (is_array($postData) && array_key_exists('CVSStoreID', $postData) && $postData['shipping_method'][0] === 'ecpay_shipping') {
+            foreach ($CVSField as $key => $valueLabel) {
+                $value['.woocommerce-checkout-review-order-table'] = substr_replace($value['.woocommerce-checkout-review-order-table'], $postData[$key], strpos($value['.woocommerce-checkout-review-order-table'], $valueLabel) + strlen($valueLabel), 0);
+            }
+        }
+
+        return $value;
+    }
+
+    function check_checkout_payment_method($value)
+    {
         global $woocommerce;
         $cartTotalAmount = intval($woocommerce->cart->total);
-
         $availableGateways = WC()->payment_gateways->get_available_payment_gateways();
         if (is_array($availableGateways)) {
             $paymentGateways = array_keys($availableGateways);
+        }
+
+        if ( ! in_array('ecpay_shipping_pay', $paymentGateways)) {
+            return $value;
         }
 
         $ecpayShippingType = array(
@@ -1210,8 +1233,6 @@
                         array_push($paymentMethods, '<li class="wc_payment_method payment_method_' . $gateway . '">');
                     }
                 }
-            } else {
-                array_push($paymentMethods, '<li class="wc_payment_method payment_method_ecpay_shipping_pay">');
             }
         } else {
             array_push($paymentMethods, '<li class="wc_payment_method payment_method_ecpay_shipping_pay">');
@@ -1221,19 +1242,6 @@
             $hide = ' style="display: none;"';
             foreach ($paymentMethods as $key => $paymentMethod) {
                 $value['.woocommerce-checkout-payment'] = substr_replace($value['.woocommerce-checkout-payment'], $hide, strpos($value['.woocommerce-checkout-payment'], $paymentMethod) + strlen($paymentMethod) - 1, 0);
-            }
-        }
-
-        $CVSField = array(
-            'purchaserStore' => '<label id="purchaserStoreLabel">',
-            'purchaserAddress' => '<label id="purchaserAddressLabel">',
-            'purchaserPhone' => '<label id="purchaserPhoneLabel">'
-        );
-        parse_str($_POST['post_data'], $postData);
-
-        if (is_array($postData) && array_key_exists('CVSStoreID', $postData) && $postData['shipping_method'][0] === 'ecpay_shipping') {
-            foreach ($CVSField as $key => $valueLabel) {
-                $value['.woocommerce-checkout-review-order-table'] = substr_replace($value['.woocommerce-checkout-review-order-table'], $postData[$key], strpos($value['.woocommerce-checkout-review-order-table'], $valueLabel) + strlen($valueLabel), 0);
             }
         }
 
