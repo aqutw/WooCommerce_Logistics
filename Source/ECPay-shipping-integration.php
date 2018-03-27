@@ -1,12 +1,12 @@
 <?php
 /**
  * @copyright Copyright (c) 2018 Green World FinTech Service Co., Ltd. (https://www.ecpay.com.tw)
- * @version 1.2.0223
+ * @version 1.2.0315
  *
  * Plugin Name: WooCommerce ECPay Shipping
  * Plugin URI: https://www.ecpay.com.tw
  * Description: ECPay Integration Shipping Gateway for WooCommerce
- * Version: 1.2.0223
+ * Version: 1.2.0315
  * Author: ECPay Green World FinTech Service Co., Ltd. 
  * Author URI: https://www.ecpay.com.tw
  */
@@ -765,7 +765,7 @@
                         </script>
                         <?php
                         // register ecpay-shipping-checkout to be enqueued.
-                        wp_register_script( 'ecpay-shipping-checkout', plugins_url( 'js/ECPay-shipping-checkout.js?1.2.0223', __FILE__ ), null, true );
+                        wp_register_script( 'ecpay-shipping-checkout', plugins_url( 'js/ECPay-shipping-checkout.js?1.2.0315', __FILE__ ), null, true );
 
                         // enqueues ecpay-shipping-checkout.
                         if ( ! wp_script_is( 'ecpay-shipping-checkout', 'enqueued' ) ) {
