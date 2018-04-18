@@ -1,12 +1,5 @@
 <?php
 	/**
-	 * ECPay 物流 SDK 
-	 *
-	 * @author		https://www.ecpay.com.tw
-	 * @version		1.0.1012
-	 */
-
-	/**
 	 *  物流類型
 	 *
 	 * @author		https://www.ecpay.com.tw

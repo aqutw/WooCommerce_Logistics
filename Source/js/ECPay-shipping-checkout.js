@@ -36,7 +36,18 @@ jQuery(document).ready(function($) {
                     document.getElementById(key) !== null && 
                     typeof document.getElementById(key) !== "undefined"
                 ) {
+                    // 一般結帳欄位設定
                     document.getElementById(key).value = checkoutData[key];
+                } else {
+                    // 設定 運送到不同的地址
+                    if (key === 'shipping_to_different_address') {
+                        var diff_address_id = 'ship-to-different-address-checkbox';
+                        if (checkoutData[key] === 'true') {
+                            document.getElementById(diff_address_id).checked = true;
+                        } else {
+                            document.getElementById(diff_address_id).checked = false;
+                        }
+                    }
                 }
             });
         },
@@ -49,7 +60,7 @@ jQuery(document).ready(function($) {
         },
         init_checkout: function() {
             this.$checkout_form.on( 'change',
-                '#billing_first_name, #billing_last_name, #billing_company, #billing_phone, #billing_email, #shipping_first_name, #shipping_last_name, #shipping_company, #order_comments',
+                '#billing_first_name, #billing_last_name, #billing_company, #billing_phone, #billing_email, #shipping_first_name, #shipping_last_name, #shipping_company,#ship-to-different-address-checkbox,  #order_comments',
                 this.submit_checkout
             );
         },
@@ -126,13 +137,14 @@ jQuery(document).ready(function($) {
                 shipping_first_name = billing_first_name,
                 shipping_last_name  = billing_last_name,
                 shipping_company    = billing_company,
-                order_comments      = '';
+                shipping_to_different_address = false;
+                order_comments      = $( 'textarea#order_comments' ).val();
 
             if ( $( '#ship-to-different-address' ).find( 'input' ).is( ':checked' ) ) {
+                shipping_to_different_address = true;
                 shipping_first_name = $( '#shipping_first_name' ).val();
                 shipping_last_name  = $( '#shipping_last_name' ).val();
                 shipping_company    = $( '#shipping_company' ).val();
-                order_comments      = $( 'textarea#order_comments' ).val();
             }
             var data = {
                 billing_first_name  : billing_first_name,
@@ -140,6 +152,7 @@ jQuery(document).ready(function($) {
                 billing_company     : billing_company,
                 billing_phone       : billing_phone,
                 billing_email       : billing_email,
+                shipping_to_different_address       : shipping_to_different_address,
                 shipping_first_name : shipping_first_name,
                 shipping_last_name  : shipping_last_name,
                 shipping_company    : shipping_company,
