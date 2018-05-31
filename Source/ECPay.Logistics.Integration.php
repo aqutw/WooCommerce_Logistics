@@ -1,5 +1,12 @@
 <?php
 	/**
+	 * ECPay 物流 SDK 
+	 *
+	 * @author		https://www.ecpay.com.tw
+	 * @version		1.0.1012
+	 */
+
+	/**
 	 *  物流類型
 	 *
 	 * @author		https://www.ecpay.com.tw
@@ -347,6 +354,13 @@
 			}
 			
 			$this->ValidateAmount('GoodsAmount', $this->PostParams['GoodsAmount']);
+			if (
+				$this->PostParams['LogisticsSubType'] == LogisticsSubType::UNIMART ||
+				$this->PostParams['LogisticsSubType'] == LogisticsSubType::UNIMART_C2C
+			) {
+				// 物流子類型(LogisticsSubType)為統一超商(UNIMART)或統一超商交貨便(UNIMARTC2C)時，商品金額範圍為1~19,999元
+				$MaxAmount = 19999;
+			}
 			if ($this->PostParams['GoodsAmount'] < $MinAmount or $this->PostParams['GoodsAmount'] > $MaxAmount){
 				throw new Exception('Invalid GoodsAmount.');
 			}
@@ -530,6 +544,13 @@
 			}
 			
 			$this->ValidateAmount('GoodsAmount', $this->PostParams['GoodsAmount']);
+			if (
+				$this->PostParams['LogisticsSubType'] == LogisticsSubType::UNIMART ||
+				$this->PostParams['LogisticsSubType'] == LogisticsSubType::UNIMART_C2C
+			) {
+				// 物流子類型(LogisticsSubType)為統一超商(UNIMART)或統一超商交貨便(UNIMARTC2C)時，商品金額範圍為1~19,999元
+				$MaxAmount = 19999;
+			}
 			if ($this->PostParams['GoodsAmount'] < $MinAmount or $this->PostParams['GoodsAmount'] > $MaxAmount){
 				throw new Exception('Invalid GoodsAmount.');
 			}
@@ -850,7 +871,7 @@
 			$this->ValidateID('PlatformID', $this->PostParams['PlatformID'], 10, true);
 
 			$MinAmount = 1; // 金額下限
-			$MaxAmount = 20000; // 金額上限
+			$MaxAmount = 19999; // 金額上限
 			if ($this->PostParams['GoodsAmount'] < $MinAmount or $this->PostParams['GoodsAmount'] > $MaxAmount){
 				throw new Exception('Invalid GoodsAmount.');
 			}	
@@ -1620,9 +1641,7 @@
 				$this->IsOverLength($Name, $this->StringLength($Value, $this->Encode), $MaxLength);
 				
 				// 格式檢查
-                if (!filter_var($Value, FILTER_VALIDATE_EMAIL)) {
-                    throw new Exception('Invalid ' . $Name . '.');
-                }
+				$this->IsValidFormat($Name, '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9]{2,4}$/', $Value);
 			}
 		}
 		
@@ -2225,7 +2244,7 @@
 			$PostHTML = $this->AddNextLine('<div style="text-align:center;">');
 			$PostHTML .= $this->AddNextLine('  <form id="ECPayForm" method="POST" action="' . $this->ServiceURL . '" target="' . $Target . '">');
 			foreach ($this->PostParams as $Name => $Value) {
-				$PostHTML .= $this->AddNextLine('    <input type="hidden" id="' . $Name . '" name="' . $Name . '" value="' . $Value . '" />');
+				$PostHTML .= $this->AddNextLine('    <input type="hidden" name="' . $Name . '" value="' . $Value . '" />');
 			}
 			if (!empty($ButtonDesc)) {
 				// 手動

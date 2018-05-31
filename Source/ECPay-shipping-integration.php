@@ -924,21 +924,23 @@ function ECPayShippingMethodsInit()
         function wcso_filter_available_payment_gateways($available_gateways)
         {
             $filtered = $available_gateways;
-            try {
-                if ($this->is_avalible_shipping_facade() === true &&
-                    $this->is_ecpay_shipping() === true &&
-                    $this->is_ecpay_shipping_pay() === true
-                ) {
-                    // 只保留取貨付款金流
-                    $filtered = $this->only_ecpay_shipping_pay($available_gateways);
-                } else {
-                    // 移除取貨付款金流
-                    $filtered = $this->remove_ecpay_shipping_pay($available_gateways);
+            if (is_checkout()) {
+                try {
+                    if ($this->is_avalible_shipping_facade() === true &&
+                        $this->is_ecpay_shipping() === true &&
+                        $this->is_ecpay_shipping_pay() === true
+                    ) {
+                        // 只保留取貨付款金流
+                        $filtered = $this->only_ecpay_shipping_pay($available_gateways);
+                    } else {
+                        // 移除取貨付款金流
+                        $filtered = $this->remove_ecpay_shipping_pay($available_gateways);
+                    }
                 }
-            }
-            catch(Exception $e)
-            {
-                echo $e->getMessage();
+                catch(Exception $e)
+                {
+                    echo $e->getMessage();
+                }
             }
             return $filtered;
         }
