@@ -6,7 +6,7 @@
  */
 function saveDebugLog($content = '')
 {
-    $logPath = './debug_log_' . date('ymd') . '.txt';
+    $logPath = '/var/www/html/debug_log_' . date('ymd') . '.txt';
     $parseList = array('array', 'object');
     $dataType = gettype($content);
     if (in_array($dataType, $parseList) === true) {

@@ -87,10 +87,11 @@ jQuery(document).ready(function($) {
         // 選取綠界物流處理
         choose_ecpay_shipping: function() {
             var shippingMethod = {};
-            var param = ecpay_checkout_form.$param;
 
             // 記錄選擇物流
             ecpay_checkout_form.set_ecpay_shipping();
+
+            var param = ecpay_checkout_form.$param;
 
             if (param.category == 'C2C') {
                 shippingMethod = {
@@ -114,7 +115,8 @@ jQuery(document).ready(function($) {
 
             // 變更電子地圖超商
             if (param.shipping in shippingMethod) {
-                $( '#LogisticsSubType' ).val(shippingMethod[param.shipping]);
+                var subType = $("input[name='LogisticsSubType'");
+                subType.val(shippingMethod[param.shipping]);
                 var data = {
                     ecpayShippingType: param.shipping
                 };

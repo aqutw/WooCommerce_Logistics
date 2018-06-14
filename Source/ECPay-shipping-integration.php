@@ -1,12 +1,12 @@
 <?php
 /**
  * @copyright Copyright (c) 2018 Green World FinTech Service Co., Ltd. (https://www.ecpay.com.tw)
- * @version 1.2.180423
+ * @version 1.2.180612
  *
  * Plugin Name: ECPay Logistics for WooCommerce
  * Plugin URI: https://www.ecpay.com.tw
  * Description: ECPay Integration Logistics Gateway for WooCommerce
- * Version: 1.2.180423
+ * Version: 1.2.180612
  * Author: ECPay Green World FinTech Service Co., Ltd. 
  * Author URI:  techsupport@ecpay.com.tw
  */
@@ -31,7 +31,7 @@ if (!class_exists('ECPayShippingStatus')) {
         function register_status()
         {
             register_post_status(
-                'wc-ecpay', 
+                'wc-ecpay',
                 array(
                     'label'                     => _x( 'ECPay Shipping', 'Order status', 'woocommerce' ),
                     'public'                    => true,
