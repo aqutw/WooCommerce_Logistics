@@ -1,12 +1,12 @@
 <?php
 /**
  * @copyright Copyright (c) 2018 Green World FinTech Service Co., Ltd. (https://www.ecpay.com.tw)
- * @version 1.2.180612
+ * @version 1.2.180626
  *
  * Plugin Name: ECPay Logistics for WooCommerce
  * Plugin URI: https://www.ecpay.com.tw
  * Description: ECPay Integration Logistics Gateway for WooCommerce
- * Version: 1.2.180612
+ * Version: 1.2.180626
  * Author: ECPay Green World FinTech Service Co., Ltd. 
  * Author URI:  techsupport@ecpay.com.tw
  */

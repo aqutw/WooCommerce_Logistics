@@ -115,8 +115,7 @@ jQuery(document).ready(function($) {
 
             // 變更電子地圖超商
             if (param.shipping in shippingMethod) {
-                var subType = $("input[name='LogisticsSubType'");
-                subType.val(shippingMethod[param.shipping]);
+                document.getElementsByName("LogisticsSubType")[0].value = shippingMethod[param.shipping];
                 var data = {
                     ecpayShippingType: param.shipping
                 };
