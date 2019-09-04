@@ -1,5 +1,4 @@
 <?php
-require_once('lib/Common.php');
 session_start();
 
 if ( ! is_array($_POST)) {
