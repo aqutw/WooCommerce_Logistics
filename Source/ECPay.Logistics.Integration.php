@@ -189,7 +189,7 @@ if (!class_exists('EcpayLogistics', false)) {
         /**
          * 版本
          */
-        const VERSION = '1.1.190530';
+        const VERSION = '1.1.190911';
 
         public $ServiceURL = '';
         public $HashKey = '';
@@ -611,7 +611,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
             // 正確：1|MerchantID=XXX&MerchantTradeNo=XXX&RtnCode=XXX&RtnMsg=XXX&AllPayLogisticsID=XXX&LogisticsType=XXX&LogisticsSubType=XXX&GoodsAmount=XXX&UpdateStatusDate=XXX&ReceiverName=XXX&ReceiverPhone=XXX&ReceiverCellPhone=XXX&ReceiverEmail=XXX&ReceiverAddress=XXX&CVSPaymentNo=XXX&CVSValidationNo=XXX &CheckMacValue=XXX
             // 錯誤：0|ErrorMessage
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             $Pieces = explode('|', $Feedback);
             $Result = array();
             $Result['ResCode'] = $Pieces[0];
@@ -787,7 +787,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
             // 正確：1|OK
             // 錯誤：0|ErrorMessage
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             $Result = $this->ParseFeedback($Feedback);
 
             return $Result;
@@ -846,7 +846,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
             // 正確：RtnMerchantTradeNo | RtnOrderNo
             // 錯誤：|ErrorMessage
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             $Pieces = explode('|', $Feedback);
             $Result = array('RtnMerchantTradeNo' => '', 'RtnOrderNo' => '');
             if (empty($Pieces[0])) {
@@ -909,7 +909,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
             // 正確：RtnMerchantTradeNo | RtnOrderNo
             // 錯誤：|ErrorMessage
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             $Pieces = explode('|', $Feedback);
             $Result = array('RtnMerchantTradeNo' => '', 'RtnOrderNo' => '');
             if (empty($Pieces[0])) {
@@ -999,7 +999,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
             // 正確：RtnMerchantTradeNo | RtnOrderNo
             // 錯誤：|ErrorMessage
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             $Pieces = explode('|', $Feedback);
             $Result = array('RtnMerchantTradeNo' => '', 'RtnOrderNo' => '');
             if (empty($Pieces[0])) {
@@ -1042,7 +1042,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
             // 正確：1|OK
             // 錯誤：0|ErrorMessage
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             $Result = $this->ParseFeedback($Feedback);
 
             return $Result;
@@ -1087,7 +1087,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
             // 正確：1|OK
             // 錯誤：0|ErrorMessage
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             $Result = $this->ParseFeedback($Feedback);
 
             return $Result;
@@ -1144,7 +1144,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
             // 正確：1|OK
             // 錯誤：0|ErrorMessage
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             $Result = $this->ParseFeedback($Feedback);
 
             return $Result;
@@ -1184,7 +1184,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
             // 正確：1|OK
             // 錯誤：0|ErrorMessage
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             $Result = $this->ParseFeedback($Feedback);
 
             return $Result;
@@ -1221,7 +1221,7 @@ if (!class_exists('EcpayLogistics', false)) {
             // 解析回傳結果
                 // 回應訊息：MerchantID=XXX&MerchantTradeNo=XXX&AllPayLogisticsID=XXX&GoodsAmount=XXX&LogisticsType=XXX&HandlingCharge=XXX&TradeDate=XXX&LogisticsStatus=XXX&GoodsName=XXX &CheckMacValue=XXX
             $Result = array();
-            $Feedback = EcpayIo::ServerPost($this->PostParams, $this->ServiceURL);
+            $Feedback = static::ServerPost($this->PostParams, $this->ServiceURL);
             parse_str($Feedback, $Result);
 
             return $Result;
@@ -1706,12 +1706,7 @@ if (!class_exists('EcpayLogistics', false)) {
             }
 
             // 內容檢查
-            if (isset($Params['LogisticsType']) === true) {
-                $NameWithType = ucfirst(strtolower($Params['LogisticsType'])) . $Name;
-                $this->IsLegal($NameWithType, $Value);
-            } else {
-                $this->IsLegal($Name, $Value);
-            }
+            $this->IsLegal($Name, $Value);
         }
 
         /**

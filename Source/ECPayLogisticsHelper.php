@@ -7,12 +7,12 @@ final class ECPayLogisticsHelper extends ECPayLogisticsModuleHelper
     /**
      * @var string SDK class name(required)
      */
-    protected $sdkClassName = 'ECPayLogistics';
+    protected $sdkClassName = 'EcpayWooLogistics';
 
     /**
      * @var string SDK file path(required)
      */
-    protected $sdkFilePath = 'ECPay.Logistics.Integration.php';
+    protected $sdkFilePath = 'ECPay.Logistics.Integration.Shell.php';
 
     /**
      * @var string 目錄路徑

@@ -1,4 +1,10 @@
 <?php
+
+if ( !defined('ABSPATH') ) {
+    define('ABSPATH', $_SERVER['DOCUMENT_ROOT'] . '/');
+}
+require_once(ABSPATH . 'wp-load.php');
+
 session_start();
 
 if ( ! is_array($_POST)) {
@@ -57,7 +63,7 @@ class ECPay_ecpayShippingType extends ECPayShippingCheckout
         }
 
         foreach ($checkout as $key => $value) {
-            $checkout[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            $checkout[$key] = sanitize_text_field($value);
         }
 
         $this->ecpayCheckout = $checkout;
@@ -96,7 +102,7 @@ class ECPay_checkoutInput extends ECPayShippingCheckout
         }
 
         foreach ($checkout as $key => $value) {
-            $checkout[$key] = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            $checkout[$key] = sanitize_text_field($value);
         }
 
         $this->ecpayCheckout = $checkout;

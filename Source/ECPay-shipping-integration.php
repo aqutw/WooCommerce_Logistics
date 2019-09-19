@@ -1,12 +1,12 @@
 <?php
 /**
  * @copyright Copyright (c) 2018 Green World FinTech Service Co., Ltd. (https://www.ecpay.com.tw)
- * @version 1.3.190807
+ * @version 1.3.190911
  *
  * Plugin Name: ECPay Logistics for WooCommerce
  * Plugin URI: https://www.ecpay.com.tw
  * Description: ECPay Integration Logistics Gateway for WooCommerce
- * Version: 1.3.190807
+ * Version: 1.3.190911
  * Author: ECPay Green World FinTech Service Co., Ltd.
  * Author URI:  techsupport@ecpay.com.tw
  */
@@ -232,7 +232,7 @@ function ECPayShippingMethodsInit()
 
                 // 訂單金額
                 $temp = explode('.', $orderInfo['_order_total'][0]);
-                $totalPrice = $temp[0];
+                $totalPrice = esc_html($temp[0]);
 
                 // 判斷URL是否為 https
                 if ($this->helper->isHttps(home_url( add_query_arg( array(), $woocommerce->request ) ))) {
@@ -253,10 +253,10 @@ function ECPayShippingMethodsInit()
                     'SenderName'           => $this->SenderName,
                     'SenderPhone'          => $this->SenderPhone,
                     'SenderCellPhone'      => $this->SenderCellPhone,
-                    'ReceiverName'         => $this->get_receiver_name($orderInfo),
-                    'ReceiverPhone'        => $orderInfo['_billing_phone'][0],
-                    'ReceiverCellPhone'    => $orderInfo['_billing_phone'][0],
-                    'ReceiverEmail'        => $orderInfo['_billing_email'][0],
+                    'ReceiverName'         => esc_html($this->get_receiver_name($orderInfo)),
+                    'ReceiverPhone'        => esc_html($orderInfo['_billing_phone'][0]),
+                    'ReceiverCellPhone'    => esc_html($orderInfo['_billing_phone'][0]),
+                    'ReceiverEmail'        => esc_html($orderInfo['_billing_email'][0]),
                     'ServerReplyURL'       => str_replace( 'http:', $replace, add_query_arg('wc-api', 'WC_Gateway_Ecpay_Logis', home_url('/')) ),
                     'LogisticsC2CReplyURL' => str_replace( 'http:', $replace, add_query_arg('wc-api', 'WC_Gateway_Ecpay_Logis', home_url('/')) ),
                     'Remark'               => esc_html($orderObj->get_customer_note()),
@@ -320,7 +320,7 @@ function ECPayShippingMethodsInit()
                         break;
                 }
             }catch(Exception $e) {
-                echo $e->getMessage();
+                echo esc_html($e->getMessage());
             }
         }
 
@@ -400,24 +400,24 @@ function ECPayShippingMethodsInit()
         {
             $fields['shipping']['purchaserStore'] = array(
                 'label' => __( '超商取貨門市名稱', 'purchaserStore' ),
-                'default'       => isset($_REQUEST['CVSStoreName']) ? $_REQUEST['CVSStoreName'] : '',
+                'default'       => isset($_REQUEST['CVSStoreName']) ? esc_html($_REQUEST['CVSStoreName']) : '',
                 'required'      => true,
                 'class'         => array('hidden')
             );
             $fields['shipping']['purchaserAddress'] = array(
                 'label' => __( '超商取貨門市地址', 'purchaserAddress' ),
-                'default'       => isset($_REQUEST['CVSAddress']) ? $_REQUEST['CVSAddress'] : '',
+                'default'       => isset($_REQUEST['CVSAddress']) ? esc_html($_REQUEST['CVSAddress']) : '',
                 'required'      => true,
                 'class'         => array('hidden')
             );
             $fields['shipping']['purchaserPhone'] = array(
                 'label' => __( '超商取貨門市電話', 'purchaserPhone' ),
-                'default'       => isset($_REQUEST['CVSTelephone']) ? $_REQUEST['CVSTelephone'] : '',
+                'default'       => isset($_REQUEST['CVSTelephone']) ? esc_html($_REQUEST['CVSTelephone']) : '',
                 'class'         => array('hidden'),
             );
             $fields['shipping']['CVSStoreID'] = array(
                 'label' => __( '超商取貨門市代號', 'CVSStoreID' ),
-                'default'       => isset($_REQUEST['CVSStoreID']) ? $_REQUEST['CVSStoreID'] : '',
+                'default'       => isset($_REQUEST['CVSStoreID']) ? esc_html($_REQUEST['CVSStoreID']) : '',
                 'required'      => true,
                 'class'         => array('hidden')
             );
@@ -708,7 +708,8 @@ function ECPayShippingMethodsInit()
                             foreach ($this->helper->ecpayLogistics['B2C'] as $key => $value) {
                         ?>
                             <tr class="option-tr">
-                                <td><input type="checkbox" name="<?php echo $key;?>" value="<?php echo $key; ?>" <?php if (in_array($key, $this->shipping_options)) echo 'checked';?>> <?php echo $value; ?></td>
+                                <td><input type="checkbox" name="<?php echo esc_html($key);?>" value="<?php echo esc_html($key); ?>"
+                                <?php if (in_array($key, $this->shipping_options)) echo 'checked';?>> <?php echo esc_html($value); ?></td>
                             </tr>
                         <?php }?>
                         </tbody>
@@ -733,7 +734,7 @@ function ECPayShippingMethodsInit()
             $ecpay_category = $this->category;
             if (empty($ecpay_category) === true) {
                 if (isset($_POST['woocommerce_ecpay_shipping_category']) === true) {
-                    $ecpay_category = $_POST['woocommerce_ecpay_shipping_category'];
+                    $ecpay_category = sanitize_text_field($_POST['woocommerce_ecpay_shipping_category']);
                 }
             }
 
@@ -777,7 +778,7 @@ function ECPayShippingMethodsInit()
 
                     $data = array(
                         'MerchantTradeNo'  => 'no' . date('ymdHis'),
-                        'LogisticsSubType' => $sub_type,
+                        'LogisticsSubType' => esc_html($sub_type),
                         'ServerReplyURL'   => $replyUrl,
                         'Device'           => wp_is_mobile()
                     );
@@ -786,11 +787,11 @@ function ECPayShippingMethodsInit()
                     $options = '<option>------</option>';
                     foreach ($this->shipping_options as $option) {
                         $selected = ($shipping_type == esc_attr($option)) ? 'selected' : '';
-                        $options .= '<option value="' . esc_attr($option) . '" ' . $selected . '>' . $shipping_name[$option] . '</option>';
+                        $options .= '<option value="' . esc_attr($option) . '" ' . $selected . '>' . esc_html($shipping_name[$option]) . '</option>';
                     }
 
                     echo '
-                        <input type="hidden" id="category" name="category" value=' . $this->category . '>
+                        <input type="hidden" id="category" name="category" value=' . esc_attr($this->category) . '>
                         <tr class="shipping_option">
                             <th>' . $this->method_title . '</th>
                             <td>
@@ -819,7 +820,7 @@ function ECPayShippingMethodsInit()
             }
             catch(Exception $e)
             {
-                echo $e->getMessage();
+                echo esc_html($e->getMessage());
             }
         }
 
@@ -888,7 +889,7 @@ function ECPayShippingMethodsInit()
         {
             $this->start_session();
             if (isset($_SESSION['ecpayShippingType']) === true) {
-                $shipping_type = $_SESSION['ecpayShippingType'];
+                $shipping_type = sanitize_text_field($_SESSION['ecpayShippingType']);
             } else {
                 $shipping_type = '';
             }
@@ -965,7 +966,7 @@ function ECPayShippingMethodsInit()
                 }
                 catch(Exception $e)
                 {
-                    echo $e->getMessage();
+                    echo esc_html($e->getMessage());
                 }
             }
             return $filtered;
@@ -983,7 +984,7 @@ function ECPayShippingMethodsInit()
                     $checkout = array();
                     foreach ($this->checkoutData as $key => $value) {
                         if (isset($_SESSION[$value]) === true) {
-                            $checkout[$value] = $_SESSION[$value];
+                            $checkout[$value] = sanitize_text_field($_SESSION[$value]);
                         } else {
                             $checkout[$value] = '';
                         }
@@ -1006,7 +1007,7 @@ function ECPayShippingMethodsInit()
             }
             catch(Exception $e)
             {
-                echo $e->getMessage();
+                echo esc_html($e->getMessage());
             }
         }
 
@@ -1023,7 +1024,7 @@ function ECPayShippingMethodsInit()
                 $chosen_method = $woocommerce->session->get('chosen_shipping_methods');
                 $chosen_option= $woocommerce->session->_chosen_shipping_option;
                 if (is_array($chosen_method) && in_array($this->id, $chosen_method) && $chosen_option) {
-                    update_post_meta( $order_id, 'wcso_shipping_option', $woocommerce->session->_chosen_shipping_option );
+                    update_post_meta( $order_id, 'wcso_shipping_option', sanitize_text_field($woocommerce->session->_chosen_shipping_option ));
                 }
             }
         }
@@ -1067,7 +1068,7 @@ function save_selected()
 {
     if ( isset( $_GET['shipping_option'] ) && !empty( $_GET['shipping_option'] ) ) {
         global $woocommerce;
-        $selected_option = $_GET['shipping_option'];
+        $selected_option = sanitize_text_field($_GET['shipping_option']);
         $woocommerce->session->_chosen_shipping_option = sanitize_text_field( $selected_option );
     }
     die();
@@ -1234,7 +1235,7 @@ function ecpay_shipping_integration_plugin_init()
             $order = wc_get_order( $MerchantTradeNo );
 
             // 新增訂單備註
-            $order->add_order_note(print_r($response, true));
+            $order->add_order_note(esc_html(print_r($response, true)));
 
             // 解析回傳狀態碼
             $status = $this->helper->receiveResponse($response['RtnCode']);
@@ -1259,7 +1260,7 @@ function ecpay_shipping_integration_plugin_init()
 
             $metaKeys = array('AllPayLogisticsID', 'CVSPaymentNo', 'CVSValidationNo');
             foreach ($metaKeys as $key) {
-                update_post_meta($tradeNo, "_{$key}", $response[$key]);
+                update_post_meta($tradeNo, "_{$key}", sanitize_text_field($response[$key]));
             }
         }
 
@@ -1273,14 +1274,14 @@ function ecpay_shipping_integration_plugin_init()
             $order->add_order_note("會員已更換門市", 0, false );
 
             // 訂單更新門市訊息
-            update_post_meta($MerchantTradeNo, '_CVSStoreID', $response['CVSStoreID']);
-            update_post_meta($MerchantTradeNo, '_purchaserStore', $response['CVSStoreName']);
-            update_post_meta($MerchantTradeNo, '_purchaserAddress', $response['CVSAddress']);
-            update_post_meta($MerchantTradeNo, '_purchaserPhone', $response['CVSTelephone']);
-            update_post_meta($MerchantTradeNo, '_shipping_CVSStoreID', $response['CVSStoreID']);
-            update_post_meta($MerchantTradeNo, '_shipping_purchaserStore', $response['CVSStoreName']);
-            update_post_meta($MerchantTradeNo, '_shipping_purchaserAddress', $response['CVSAddress']);
-            update_post_meta($MerchantTradeNo, '_shipping_purchaserPhone', $response['CVSTelephone']);
+            update_post_meta($MerchantTradeNo, '_CVSStoreID', sanitize_text_field($response['CVSStoreID']));
+            update_post_meta($MerchantTradeNo, '_purchaserStore', sanitize_text_field($response['CVSStoreName']));
+            update_post_meta($MerchantTradeNo, '_purchaserAddress', sanitize_text_field($response['CVSAddress']));
+            update_post_meta($MerchantTradeNo, '_purchaserPhone', sanitize_text_field($response['CVSTelephone']));
+            update_post_meta($MerchantTradeNo, '_shipping_CVSStoreID', sanitize_text_field($response['CVSStoreID']));
+            update_post_meta($MerchantTradeNo, '_shipping_purchaserStore', sanitize_text_field($response['CVSStoreName']));
+            update_post_meta($MerchantTradeNo, '_shipping_purchaserAddress', sanitize_text_field($response['CVSAddress']));
+            update_post_meta($MerchantTradeNo, '_shipping_purchaserPhone', sanitize_text_field($response['CVSTelephone']));
 
             ?>
             <script type="text/javascript">
@@ -1540,10 +1541,10 @@ function ecpay_custom_order_detail_shipping_address($order)
             $_purchaserAddress = (array_key_exists('_shipping_purchaserAddress', get_post_meta($order->get_id()))) ? get_post_meta( $order->get_id(), '_shipping_purchaserAddress', true ) : get_post_meta( $order->get_id(), '_purchaserAddress', true );
             $_purchaserPhone = (array_key_exists('_shipping_purchaserPhone', get_post_meta($order->get_id()))) ? get_post_meta( $order->get_id(), '_shipping_purchaserPhone', true ) : get_post_meta( $order->get_id(), '_purchaserPhone', true );
 
-            $order->set_shipping_company($_purchaserPhone);
-            $order->set_shipping_address_1($_purchaserAddress);
+            $order->set_shipping_company(sanitize_text_field($_purchaserPhone));
+            $order->set_shipping_address_1(sanitize_text_field($_purchaserAddress));
             $order->set_shipping_address_2('');
-            $order->set_shipping_first_name($ecpayShippingStore . '&nbsp;' . $_purchaserStore);
+            $order->set_shipping_first_name(sanitize_text_field($ecpayShippingStore) . '&nbsp;' . sanitize_text_field($_purchaserStore));
             $order->set_shipping_last_name('');
             $order->set_shipping_city('');
             $order->set_shipping_state('');
